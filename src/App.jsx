@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import Places from './components/Places.jsx';
 import { AVAILABLE_PLACES } from './data.js';
@@ -12,18 +12,19 @@ const storedPlaces = storeIds.map((id) =>
   AVAILABLE_PLACES.find((place) => place.id === id)
 );
 function App() {
-  const modal = useRef();
-  const selectedPlace = useRef();
   const [pickedPlaces, setPickedPlaces] = useState(storedPlaces);
   const [availablePlaces, setAvailablePlaces] = useState([]);
+  const [isModalOpened, setIsModalOpened] = useState(false);
+
+  const selectedPlace = useRef();
 
   function handleStartRemovePlace(id) {
-    modal.current.open();
+    setIsModalOpened(true);
     selectedPlace.current = id;
   }
 
   function handleStopRemovePlace() {
-    modal.current.close();
+    setIsModalOpened(false);
   }
 
   function handleSelectPlace(id) {
@@ -45,7 +46,7 @@ function App() {
     setPickedPlaces((prevPickedPlaces) =>
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
-    modal.current.close();
+    setIsModalOpened(false);
 
     const storeIds = JSON.parse(localStorage.getItem('selectedPlaces')) || [];
     localStorage.setItem(
@@ -68,7 +69,7 @@ function App() {
 
   return (
     <>
-      <Modal ref={modal}>
+      <Modal isModalOpened={isModalOpened}>
         <DeleteConfirmation
           onCancel={handleStopRemovePlace}
           onConfirm={handleRemovePlace}
